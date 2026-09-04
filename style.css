@@ -1,0 +1,57 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    }
+
+#canvas1 {
+    border: 5px solid black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #4d79bc;
+    max-width: 100%;
+    max-height: 100%;
+    font-family: 'Bangers', cursive;
+    font-family: 'Press Start 2P', cursive;
+    font-family: '8BIT WONDER', sans-serif;
+                                                
+}
+
+#layer1, #layer2, #layer3, #layer4, 
+#player, #angler1, #angler2, #lucky, #hivewhale, #drone, 
+#projectile, #gears, #smokeExplosion, #fireExplosion  {
+    display: none
+}
+
+button {
+    position: absolute;
+    display: block;
+    color: rgb(255, 255, 255);
+    background-color: rgba(6, 6, 6, 0.4);
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 100px;
+  }
+  
+  #buttonUp {
+    margin-top: 560px;
+    margin-left: 10px;
+  }
+  
+  #buttonDown {
+    margin-top: 560px;
+    margin-left: 100px;
+  }
+  
+  #buttonShoot {
+    margin-top: 620px;
+    margin-left: 55px;
+  }
+2
+
+
