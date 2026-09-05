@@ -115,6 +115,19 @@ de inimigos por faixa de tempo, com levas temáticas (só drones, só baleias).
 
 Onde: `Game.addEnemy`, que já lê `this.elapsed`.
 
+### 7. Embutir a fonte Press Start 2P
+
+Hoje ela vem do Google Fonts, e é a única dependência externa de um jogo que fora
+isso roda sem rede. É pré-requisito de qualquer tentativa de PWA: service worker
+não garante offline o que vem de outro domínio. Item comum aos cinco jogos da
+pasta.
+
+### 8. Prévia de link
+
+Mandar o endereço no WhatsApp mostra só a URL crua. São quatro tags Open Graph e
+um PNG. O custo é commitar imagem nova, o que é decisão do usuário. Item comum
+aos cinco jogos da pasta.
+
 ---
 
 ## Coisas que valem saber
