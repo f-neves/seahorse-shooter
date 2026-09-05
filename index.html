@@ -1,53 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seahorse Game</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#070d17" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Seahorse Shooter</title>
+    <meta
+      name="description"
+      content="Shoot'em up lateral em Canvas 2D numa cidade a vapor submersa, com HUD próprio para celular e para computador."
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bangers&family=Press+Start+2P&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.cdnfonts.com/css/8bit-wonder" rel="stylesheet" />
-    <style>
-      body {
-        font-family: "Press Start 2P", cursive;
-        font-size: 22px;
-      }
-    </style>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <canvas id="canvas1"></canvas>
-    <!-- characters -->
-    <img id="player" src="assets/player.png" />
-    <img id="angler1" src="assets/angler1.png" />
-    <img id="angler2" src="assets/angler2.png" />
-    <img id="lucky" src="assets/lucky.png" />
-    <img id="hivewhale" src="assets/hivewhale.png" />
-    <img id="drone" src="assets/drone.png" />
 
-    <!-- props -->
-    <img id="projectile" src="assets/projectile.png" />
-    <img id="gears" src="assets/gears.png" />
-    <img id="smokeExplosion" src="assets/smokeExplosion.png" />
-    <img id="fireExplosion" src="assets/fireExplosion.png" />
+  <body data-mode="desktop" data-state="loading">
+    <div id="app">
+      <div id="frame">
+        <!-- HUD: barra do gabinete no desktop, sobreposição no topo no mobile -->
+        <header id="hud">
+          <div class="hud-block">
+            <span class="hud-label">SCORE</span>
+            <span class="hud-value" id="scoreEl">00000</span>
+          </div>
 
-    <!-- environment -->
-    <img id="layer1" src="assets/layer1.png" />
-    <img id="layer2" src="assets/layer2.png" />
-    <img id="layer3" src="assets/layer3.png" />
-    <img id="layer4" src="assets/layer4.png" />
+          <div class="hud-block hud-block--center">
+            <div class="lives" id="livesEl" aria-label="Vidas"></div>
+            <div class="ammo" aria-label="Munição">
+              <span class="ammo-track"><span class="ammo-fill" id="ammoFill"></span></span>
+              <span class="ammo-text" id="ammoText">0</span>
+            </div>
+            <span class="power" id="powerEl" hidden>
+              TURBO <b id="powerTime">0</b>
+            </span>
+          </div>
 
-    <button class="buttonUp" id="buttonUp">Up</button>
-    <button class="buttonDown" id="buttonDown">Down</button>
-    <button class="buttonShoot" id="buttonShoot">Shoot</button>
+          <div class="hud-block hud-block--end">
+            <span class="hud-label">TEMPO</span>
+            <span class="hud-value hud-value--dim" id="clockEl">0:00</span>
+            <span class="hud-sep">·</span>
+            <span class="hud-label">RECORDE</span>
+            <span class="hud-value hud-value--dim" id="bestEl">00000</span>
+          </div>
+        </header>
 
-    <script src="buttons.js"></script>
-    <script src="script.js"></script>
+        <div id="stage">
+          <div id="screen">
+            <canvas id="game"></canvas>
+
+            <div id="loader">
+              <p>CARREGANDO</p>
+              <span class="loader-track"><span id="loaderBar"></span></span>
+            </div>
+
+            <!-- todas as telas de menu vivem aqui, uma visível por vez -->
+            <div id="panel" data-view="menu">
+              <section class="screen" data-screen="menu">
+                <h1 class="title">
+                  <span class="title-top">SEAHORSE</span>
+                  <span class="title-bottom">SHOOTER</span>
+                </h1>
+                <p class="tagline">uma cidade a vapor no fundo do mar</p>
+                <div class="menu-list">
+                  <button class="item item--go" data-nav data-action="play">JOGAR</button>
+                  <button class="item" data-nav data-action="options">OPÇÕES</button>
+                  <button class="item" data-nav data-action="records">RECORDES</button>
+                  <button class="item" data-nav data-action="help">COMO JOGAR</button>
+                </div>
+                <p class="foot">
+                  <span id="menuDifficulty">NORMAL</span>
+                  <span class="foot-sep">·</span>
+                  RECORDE <span id="menuBest">00000</span>
+                </p>
+              </section>
+
+              <section class="screen" data-screen="options">
+                <h2 class="heading">OPÇÕES</h2>
+                <div class="option-list" id="optionList"></div>
+                <button class="item item--back" data-nav data-action="back">VOLTAR</button>
+              </section>
+
+              <section class="screen" data-screen="records">
+                <h2 class="heading">RECORDES</h2>
+                <ul class="record-table" id="recordTable"></ul>
+                <div class="menu-list">
+                  <button class="item item--danger" data-nav data-action="reset">
+                    ZERAR RECORDES
+                  </button>
+                  <button class="item item--back" data-nav data-action="back">VOLTAR</button>
+                </div>
+              </section>
+
+              <section class="screen screen--wide" data-screen="help">
+                <h2 class="heading">COMO JOGAR</h2>
+
+                <ul class="help-list">
+                  <li class="help-row help-row--keys">
+                    <span class="help-keys"><kbd>W</kbd><kbd>S</kbd></span>
+                    <span class="help-text">subir e descer</span>
+                  </li>
+                  <li class="help-row help-row--keys">
+                    <span class="help-keys"><kbd>ESPAÇO</kbd></span>
+                    <span class="help-text">atirar, segurando ou tamborilando</span>
+                  </li>
+                  <li class="help-row help-row--keys">
+                    <span class="help-keys"><kbd>ESC</kbd></span>
+                    <span class="help-text">pausar</span>
+                  </li>
+                  <li class="help-row help-row--pads">
+                    <span class="help-keys"><kbd>▲</kbd><kbd>▼</kbd></span>
+                    <span class="help-text">subir e descer</span>
+                  </li>
+                  <li class="help-row help-row--pads">
+                    <span class="help-keys"><kbd>◉</kbd></span>
+                    <span class="help-text">atirar, segurando o botão</span>
+                  </li>
+                  <li class="help-row">
+                    <span class="help-icon help-icon--ammo"></span>
+                    <span class="help-text">
+                      Cada tiro gasta munição, que volta sozinha. A barra do HUD
+                      é o seu limite: não dá para segurar o gatilho para sempre.
+                    </span>
+                  </li>
+                  <li class="help-row">
+                    <span class="help-icon help-icon--power"></span>
+                    <span class="help-text">
+                      O peixe amarelo solta o <b>turbo</b>: enche a munição e
+                      libera o tiro duplo por nove segundos.
+                    </span>
+                  </li>
+                  <li class="help-row">
+                    <span class="help-icon help-icon--hive"></span>
+                    <span class="help-text">
+                      A baleia aguenta quinze tiros e, ao morrer, cospe cinco
+                      drones rápidos. Vale vinte pontos e um susto.
+                    </span>
+                  </li>
+                  <li class="help-row">
+                    <span class="help-icon help-icon--life"></span>
+                    <span class="help-text">
+                      Encostar em qualquer inimigo custa uma vida. O jogo não
+                      acaba no relógio: acaba quando as vidas terminam.
+                    </span>
+                  </li>
+                </ul>
+
+                <button class="item item--back" data-nav data-action="back">VOLTAR</button>
+              </section>
+
+              <section class="screen" data-screen="pause">
+                <h2 class="heading">PAUSADO</h2>
+                <div class="menu-list">
+                  <button class="item item--go" data-nav data-action="resume">CONTINUAR</button>
+                  <button class="item" data-nav data-action="options">OPÇÕES</button>
+                  <button class="item" data-nav data-action="help">COMO JOGAR</button>
+                  <button class="item item--danger" data-nav data-action="quit">
+                    SAIR PARA O MENU
+                  </button>
+                </div>
+              </section>
+
+              <section class="screen" data-screen="over">
+                <h2 class="heading heading--danger">SUCATEADO</h2>
+                <p class="foot foot--big">SCORE <span id="overScore">00000</span></p>
+                <p class="foot">
+                  TEMPO <span id="overTime">0:00</span>
+                  <span class="foot-sep">·</span>
+                  RECORDE <span id="overBest">00000</span>
+                </p>
+                <p class="badge" id="overBadge" hidden>NOVO RECORDE</p>
+                <div class="menu-list">
+                  <button class="item item--go" data-nav data-action="play">
+                    JOGAR DE NOVO
+                  </button>
+                  <button class="item" data-nav data-action="records">RECORDES</button>
+                  <button class="item" data-nav data-action="quit">MENU</button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- só no desktop -->
+        <footer id="hints">
+          <span class="hint"><kbd>W</kbd><kbd>S</kbd> subir e descer</span>
+          <span class="hint-sep">·</span>
+          <span class="hint"><kbd>ESPAÇO</kbd> atirar</span>
+          <span class="hint-sep">·</span>
+          <span class="hint"><kbd>ESC</kbd> pausar</span>
+        </footer>
+      </div>
+
+      <!-- só no mobile -->
+      <nav id="dock" aria-label="Controles">
+        <div class="dock-move">
+          <button id="buttonUp" class="pad" type="button" aria-label="Subir">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 4 15h16z" /></svg>
+          </button>
+          <button id="buttonDown" class="pad" type="button" aria-label="Descer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19 4 9h16z" /></svg>
+          </button>
+        </div>
+
+        <button id="buttonPause" class="pad pad--small" type="button" aria-label="Pausar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="7" y="5" width="4" height="14" rx="1" />
+            <rect x="13" y="5" width="4" height="14" rx="1" />
+          </svg>
+        </button>
+
+        <button id="buttonFire" class="pad pad--fire" type="button" aria-label="Atirar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 10.5h11V7l7 5-7 5v-3.5H3z" />
+          </svg>
+        </button>
+      </nav>
+
+      <div id="rotate">
+        <p>GIRE O APARELHO</p>
+        <span>o mar é deitado</span>
+      </div>
+    </div>
+
+    <script src="./settings.js"></script>
+    <script src="./audio.js"></script>
+    <script src="./assets.js"></script>
+    <script src="./entities.js"></script>
+    <script src="./menu.js"></script>
+    <script src="./game.js"></script>
   </body>
 </html>
