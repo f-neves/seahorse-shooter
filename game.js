@@ -623,7 +623,8 @@ window.addEventListener("keydown", (event) => {
     }
     return;
   }
-  if (event.key === "g" || event.key === "G") {
+  // `game` só existe depois que as imagens carregam
+  if ((event.key === "g" || event.key === "G") && game) {
     game.debug = !game.debug;
     return;
   }
